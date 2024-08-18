@@ -1,7 +1,7 @@
 /*
  * stm32f407xx_gpio_driver.h
  *
- * THIS HEADER FILE CONTAIN DRIVER SPECIFIC DATA
+ * THIS HEADER FILE CONTAIN DRIVER SPECIFIC DATA AND APIs
  *
  *  Created on: Aug 14, 2024
  *      Author: sachithra
