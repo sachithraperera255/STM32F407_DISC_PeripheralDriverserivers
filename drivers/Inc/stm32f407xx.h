@@ -305,8 +305,18 @@ typedef struct{
 
 #define SYSCFG_PCLK_DI()	(RCC->APB2 &= ~(1 << 14))
 
-
-
+/*
+ * Macros to reset GPIOx peripherals
+ */
+#define GPIOA_REG_RESET()	do{	(RCC->AHB1RSTR |= (1 << 0));	(RCC->AHB1RSTR &= ~(1 << 0));} while(0)
+#define GPIOB_REG_RESET()	do{	(RCC->AHB1RSTR |= (1 << 0));	(RCC->AHB1RSTR &= ~(1 << 0));} while(0)
+#define GPIOC_REG_RESET()	do{	(RCC->AHB1RSTR |= (1 << 0));	(RCC->AHB1RSTR &= ~(1 << 0));} while(0)
+#define GPIOD_REG_RESET()	do{	(RCC->AHB1RSTR |= (1 << 0));	(RCC->AHB1RSTR &= ~(1 << 0));} while(0)
+#define GPIOE_REG_RESET()	do{	(RCC->AHB1RSTR |= (1 << 0));	(RCC->AHB1RSTR &= ~(1 << 0));} while(0)
+#define GPIOF_REG_RESET()	do{	(RCC->AHB1RSTR |= (1 << 0));	(RCC->AHB1RSTR &= ~(1 << 0));} while(0)
+#define GPIOG_REG_RESET()	do{	(RCC->AHB1RSTR |= (1 << 0));	(RCC->AHB1RSTR &= ~(1 << 0));} while(0)
+#define GPIOH_REG_RESET()	do{	(RCC->AHB1RSTR |= (1 << 0));	(RCC->AHB1RSTR &= ~(1 << 0));} while(0)
+#define GPIOI_REG_RESET()	do{	(RCC->AHB1RSTR |= (1 << 0));	(RCC->AHB1RSTR &= ~(1 << 0));} while(0)
 
 /*
  * Some generic macros

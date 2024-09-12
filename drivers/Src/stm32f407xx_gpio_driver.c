@@ -29,61 +29,61 @@
 
 void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi) {
 	if (EnorDi == ENABLE) {
-		if (pGPIOx == pGPIOA) {
+		if (pGPIOx == GPIOA) {
 			GPIOA_PCLK_EN();
 
-		} else if (pGPIOx == pGPIOB) {
+		} else if (pGPIOx == GPIOB) {
 			GPIOB_PCLK_EN();
 
-		} else if (pGPIOx == pGPIOC) {
+		} else if (pGPIOx == GPIOC) {
 			GPIOC_PCLK_EN();
 
-		} else if (pGPIOx == pGPIOD) {
+		} else if (pGPIOx == GPIOD) {
 			GPIOD_PCLK_EN();
 
-		} else if (pGPIOx == pGPIOE) {
+		} else if (pGPIOx == GPIOE) {
 			GPIOE_PCLK_EN();
 
-		} else if (pGPIOx == pGPIOF) {
+		} else if (pGPIOx == GPIOF) {
 			GPIOF_PCLK_EN();
 
-		} else if (pGPIOx == pGPIOG) {
+		} else if (pGPIOx == GPIOG) {
 			GPIOG_PCLK_EN();
 
-		} else if (pGPIOx == pGPIOH) {
+		} else if (pGPIOx == GPIOH) {
 			GPIOH_PCLK_EN();
 
-		} else if (pGPIOx == pGPIOI) {
+		} else if (pGPIOx == GPIOI) {
 			GPIOI_PCLK_EN();
 
 		}
 
 	} else {
-		if (pGPIOx == pGPIOA) {
+		if (pGPIOx == GPIOA) {
 			GPIOA_PCLK_DI();
 
-		} else if (pGPIOx == pGPIOB) {
+		} else if (pGPIOx == GPIOB) {
 			GPIOB_PCLK_DI();
 
-		} else if (pGPIOx == pGPIOC) {
+		} else if (pGPIOx == GPIOC) {
 			GPIOC_PCLK_DI();
 
-		} else if (pGPIOx == pGPIOD) {
+		} else if (pGPIOx == GPIOD) {
 			GPIOD_PCLK_DI();
 
-		} else if (pGPIOx == pGPIOE) {
+		} else if (pGPIOx == GPIOE) {
 			GPIOE_PCLK_DI();
 
-		} else if (pGPIOx == pGPIOF) {
+		} else if (pGPIOx == GPIOF) {
 			GPIOF_PCLK_DI();
 
-		} else if (pGPIOx == pGPIOG) {
+		} else if (pGPIOx == GPIOG) {
 			GPIOG_PCLK_DI();
 
-		} else if (pGPIOx == pGPIOH) {
+		} else if (pGPIOx == GPIOH) {
 			GPIOH_PCLK_DI();
 
-		} else if (pGPIOx == pGPIOI) {
+		} else if (pGPIOx == GPIOI) {
 			GPIOI_PCLK_DI();
 
 		}
@@ -97,21 +97,103 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi) {
 
 void GPIO_Init(GPIO_Handle_t *pGPIOHandle) {
 
+	uint32_t temp = 0;	//TEMP. REGISTER
+
 	//1. configure the mode of the gpio pin
+
+	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG) {
+
+		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode
+				<< (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+		pGPIOHandle->pGPIOx->MODER &= ~(0x3
+				<< pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); // clearing the register
+		pGPIOHandle->pGPIOx->MODER |= temp; // setting the register
+
+	} else {
+
+		// This part will code later
+	}
+	temp = 0;
 
 	//2. configure the speed
 
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinSpeed
+			<< (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+	pGPIOHandle->pGPIOx->OSPEEDR &= ~(0x3
+			<< pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); // clearing the register
+	pGPIOHandle->pGPIOx->OSPEEDR |= temp;
+
+	temp = 0;
+
 	//3. configure the pull and pull down settings
 
-	//4. configure the out put type
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinPuPdControl
+			<< (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
+	pGPIOHandle->pGPIOx->PUPDR &= ~(0x3
+			<< pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); // clearing the register
+	pGPIOHandle->pGPIOx->PUPDR |= temp;
 
-	//5. configure the alt functionality
+	temp = 0;
+
+	//4. configure the output type
+
+	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType
+			<< pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+	pGPIOHandle->pGPIOx->OTYPER &= ~(0x1
+			<< pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber); // clearing the register
+	pGPIOHandle->pGPIOx->OTYPER |= temp;
+
+	//5. configure the ALT functionality
+
+	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_ALTFN) {
+
+		//configure the alt function
+		uint8_t temp1, temp2;
+
+		temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 8;
+		temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 8;
+
+		pGPIOHandle->pGPIOx->AFR[temp1] &= ~(0xF << (4 * temp2));
+
+		pGPIOHandle->pGPIOx->AFR[temp1] |=
+				pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunction << (4 * temp2);
+	}
 
 }
 
 void GPIO_DeInit(GPIO_RegDef_t *pGPIOx) {
 
+	if (pGPIOx == GPIOA) {
+		GPIOA_REG_RESET();
+
+	} else if (pGPIOx == GPIOB) {
+		GPIOB_REG_RESET();
+
+	} else if (pGPIOx == GPIOC) {
+		GPIOC_REG_RESET();
+
+	} else if (pGPIOx == GPIOD) {
+		GPIOD_REG_RESET();
+
+	} else if (pGPIOx == GPIOE) {
+		GPIOE_REG_RESET();
+
+	} else if (pGPIOx == GPIOF) {
+		GPIOF_REG_RESET();
+
+	} else if (pGPIOx == GPIOG) {
+		GPIOG_REG_RESET();
+
+	} else if (pGPIOx == GPIOH) {
+		GPIOH_REG_RESET();
+
+	} else if (pGPIOx == GPIOI) {
+		GPIOI_REG_RESET();
+
+	}
+
 }
+
 
 /*
  * Data read and write
@@ -119,14 +201,24 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx) {
 
 uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber) {
 
+	uint8_t value;
+	value = (uint8_t )((pGPIOx->IDR >> PinNumber) &  0x00000001);
+
+	return value;
+
 }
 
 uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx) {
 
+	uint16_t value;
+	value = (uint16_t )pGPIOx->IDR;
+
+	return value;
+
 }
 
 void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber,
-		uint8_t Value) {
+uint8_t Value) {
 
 }
 
